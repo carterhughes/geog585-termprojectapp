@@ -5,7 +5,7 @@ function init() {
 
   map = new L.map('mapid', {
     maxZoom:17
-});
+  });
 
   // create tile layer and add it to map
   var tiles = L.tileLayer('https://geog585-carterhughes.s3.amazonaws.com/MocoBasemap/{z}/{x}/{y}.png');           
@@ -92,8 +92,8 @@ function init() {
       var zoomthreshold = 14;
       if (zoomLevel > zoomthreshold) {
           // If greater than this zoom level, hide courtCentroidsLayer and show courtsLayer
-          if (map.hasLayer(courtCentroidsLayer)) {
-              map.removeLayer(courtCentroidsLayer);
+          if (map.hasLayer(courtClusters)) {
+              map.removeLayer(courtClusters);
           }
           if (!map.hasLayer(courtsLayer)) {
               map.addLayer(courtsLayer);
@@ -101,8 +101,8 @@ function init() {
       }
       else {
           // otherwise, show courtCentroidsLayer and hide courtsLayer
-          if (!map.hasLayer(courtCentroidsLayer)) {
-              map.addLayer(courtCentroidsLayer);
+          if (!map.hasLayer(courtClusters)) {
+              map.addLayer(courtClusters);
           }
           if (map.hasLayer(courtsLayer)) {
               map.removeLayer(courtsLayer);
@@ -111,7 +111,7 @@ function init() {
   };
 
   function configureExtentLayers() {
-      var group = new L.featureGroup([courtsLayer, courtCentroidsLayer]);
+      var group = new L.featureGroup([courtsLayer, courtClusters]);
 
       map.fitBounds(group.getBounds());
   };
@@ -125,14 +125,16 @@ function init() {
     map.addLayer(courtsLayer);
       courtsLayer.eachLayer(allPopup);
 
-    courtCentroidsLayer.remove();
+    courtClusters.remove();
     courtCentroidsLayer = L.geoJSON(courtCentroidJson, {
       pointToLayer: function (feature, latlng) {
             return L.marker(latlng, {icon: courtCentroidsIcon});
           },
       onEachFeature: courtCentroidsOnEachFeature
     });
-    map.addLayer(courtCentroidsLayer);
+    courtClusters = L.markerClusterGroup();
+    courtClusters.addLayer(courtCentroidsLayer);
+    map.addLayer(courtClusters);
     courtCentroidsLayer.eachLayer(allPopup);
     
     configureZoomLayers();
@@ -165,7 +167,7 @@ function init() {
       map.addLayer(courtsLayer);
       courtsLayer.eachLayer(allPopup);
 
-      courtCentroidsLayer.remove();
+      courtClusters.remove();
       courtCentroidsLayer = L.geoJSON(courtCentroidJson, {
         pointToLayer: function (feature, latlng) {
               return L.marker(latlng, {icon: courtCentroidsIcon});
@@ -183,7 +185,9 @@ function init() {
           }
         }
       });
-      map.addLayer(courtCentroidsLayer);
+      courtClusters = L.markerClusterGroup();
+      courtClusters.addLayer(courtCentroidsLayer);
+      map.addLayer(courtClusters);
       courtCentroidsLayer.eachLayer(allPopup);
     }
 
@@ -204,8 +208,7 @@ function init() {
   var courtsLayer = new L.geoJSON(courtJson,{
       style: courtsStyle,
       onEachFeature: courtOnEachFeature
-    });    
-   
+    });
   courtsLayer.addTo(map);
 
   // Fetch the GeoJSON file
@@ -215,7 +218,9 @@ function init() {
          },
     onEachFeature: courtCentroidsOnEachFeature
   });
-  courtCentroidsLayer.addTo(map);
+  var courtClusters = L.markerClusterGroup();
+  courtClusters.addLayer(courtCentroidsLayer);
+  courtCentroidsLayer.addTo(courtClusters);
 
   // handle clicks on the map that didn't hit a feature
   map.addEventListener('click', function(e) {
