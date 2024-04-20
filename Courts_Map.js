@@ -140,8 +140,7 @@ function init() {
     configureZoomLayers();
     configureExtentLayers();
     updateCourtCount();
-    document.getElementById('deselect-button').classList.remove('selected');
-    document.getElementById('deselect-button').classList.add('unselected');
+    resetButtonHighlightRemove();
   }
 
   function filterLayers(selectedSports) {
@@ -194,9 +193,18 @@ function init() {
     configureZoomLayers();
     configureExtentLayers();
     updateCourtCount();
-    document.getElementById('deselect-button').classList.remove('unselected');
-    document.getElementById('deselect-button').classList.add('selected');
+    resetButtonHighlight();
   }
+
+  function resetButtonHighlight() {
+    document.getElementById('reset-button').classList.remove('unselected');
+    document.getElementById('reset-button').classList.add('selected');
+  };
+
+  function resetButtonHighlightRemove() {
+    document.getElementById('reset-button').classList.remove('selected');
+    document.getElementById('reset-button').classList.add('unselected');
+  };
 
   // Function to update the feature count indicator
   function updateCourtCount() {
@@ -244,11 +252,41 @@ function init() {
         "<p><strong>Length: </strong> " + layer.feature.properties.LENGTH + " feet</p>" +
         "<p><strong>Width: </strong> " + layer.feature.properties.WIDTH + " feet</p>" +
         "<p><strong>Square Feet: </strong> " + layer.feature.properties.SQFT + " square feet</p>"
+        + "</div>";
       layer.bindPopup(popupContent);
   };
 
   courtsLayer.eachLayer(allPopup);
   courtCentroidsLayer.eachLayer(allPopup);
+
+  function sumAttribute(markers, attribute) {
+    let sum = 0;
+    markers.forEach(marker => {
+      sum += marker.feature.properties[attribute];
+    });
+    return sum;
+  };
+
+  // handle mouseover events on clusters
+  courtClusters.on('clustermouseover', function (a) {
+    // a.layer is a cluster
+    var childMarkers = a.layer.getAllChildMarkers();
+    var popupContent = 
+    "<div class='popup-content'>" +
+    "<h3>Total Courts: " + childMarkers.length + "</h3>" +
+    "<p><strong>Basketball Courts: </strong> " + sumAttribute(childMarkers, 'BASKETBALL') + "</p>" +
+    "<p><strong>Bocci Courts: </strong> " + sumAttribute(childMarkers, 'BOCCI') + "</p>" +
+    "<p><strong>Futsal Courts: </strong> " + sumAttribute(childMarkers, 'FUTSAL') + "</p>" +
+    "<p><strong>Handball Courts: </strong> " + sumAttribute(childMarkers, 'HANDBALL') + "</p>" +
+    "<p><strong>Hockey Courts: </strong> " + sumAttribute(childMarkers, 'HOCKEY') + "</p>" +
+    "<p><strong>Pickleball Courts: </strong> " + sumAttribute(childMarkers, 'PICKLEBALL') + "</p>" +
+    "<p><strong>Shuffleboard Courts: </strong> " + sumAttribute(childMarkers, 'SHUFFLEBOA') + "</p>" +
+    "<p><strong>Tai Chi Courts: </strong> " + sumAttribute(childMarkers, 'TAICHI') + "</p>" +
+    "<p><strong>Tennis Courts: </strong> " + sumAttribute(childMarkers, 'TENNIS') + "</p>" +
+    "<p><strong>Volleyball Courts: </strong> " + sumAttribute(childMarkers, 'VOLLEYBALL') + "</p>"
+    + "</div>";
+    a.layer.bindPopup(popupContent).openPopup();
+  });
 
   // function to handle zoom level changes
   // reference: https://gis.stackexchange.com/questions/182628/leaflet-layers-on-different-zoom-levels-how
@@ -257,6 +295,8 @@ function init() {
   }
   configureExtentLayers();
   updateCourtCount();
+  map.on('zoomend', resetButtonHighlight);
+  map.on('movestart', resetButtonHighlight);
 
   const sportsSet = new Set([
     'Basketball',
@@ -307,12 +347,12 @@ function init() {
 
   });
   
-  document.getElementById('deselect-button').addEventListener('click', function() {
+  document.getElementById('reset-button').addEventListener('click', function() {
       var dropdown = document.getElementById('sports-dropdown');
       for(var i=0; i<dropdown.options.length; i++) {
           dropdown.options[i].selected = false;
       }
       
-      reloadLayers()
+      reloadLayers();
   });
 }
