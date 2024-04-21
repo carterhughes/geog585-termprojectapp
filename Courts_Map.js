@@ -1,5 +1,8 @@
 var map;
 
+/**
+ * Initializes the map and sets up the necessary layers and event handlers.
+ */
 function init() {
   // create map and set center and zoom level
 
@@ -87,6 +90,7 @@ function init() {
     });
   }
   
+  // function to configure the layers based on the zoom level
   function configureZoomLayers() {
       var zoomLevel = map.getZoom();
       var zoomthreshold = 14;
@@ -110,12 +114,14 @@ function init() {
       }
   };
 
+  // function to configure the extent of the map based on the layers
   function configureExtentLayers() {
       var group = new L.featureGroup([courtsLayer, courtClusters]);
 
       map.fitBounds(group.getBounds());
   };
 
+  // function to reload the layers, which intends to be used when the reset button is clicked or the sports dropdown is reset
   function reloadLayers() {
     courtsLayer.remove();
     courtsLayer = new L.geoJSON(courtJson, {
@@ -144,6 +150,7 @@ function init() {
     resetButtonHighlightRemove();
   }
 
+  // function to filter the layers based on the selected sports
   function filterLayers(selectedSports) {
     if (selectedSports.length === 0) {
       reloadLayers();
@@ -198,11 +205,13 @@ function init() {
     resetButtonHighlight();
   }
 
+  // Function to highlight the reset button when the map is zoomed or moved
   function resetButtonHighlight() {
     document.getElementById('reset-button').classList.remove('unselected');
     document.getElementById('reset-button').classList.add('selected');
   };
 
+  // Function to remove the highlight from the reset button
   function resetButtonHighlightRemove() {
     document.getElementById('reset-button').classList.remove('selected');
     document.getElementById('reset-button').classList.add('unselected');
@@ -215,19 +224,22 @@ function init() {
       document.getElementById('courts-count').innerHTML = courtCount; // Update the HTML element
   }
 
+  // Fetch the GeoJSON file for the courts layer
   var courtsLayer = new L.geoJSON(courtJson,{
       style: courtsStyle,
       onEachFeature: courtOnEachFeature
     });
   courtsLayer.addTo(map);
 
-  // Fetch the GeoJSON file
+  // Fetch the GeoJSON file for the court centroids layer
   var courtCentroidsLayer = L.geoJSON(courtCentroidJson, {
     pointToLayer: function (feature, latlng) {
           return L.marker(latlng, {icon: courtCentroidsIcon});
          },
     onEachFeature: courtCentroidsOnEachFeature
   });
+
+  // Create a marker cluster group for the court centroids layer
   var courtClusters = L.markerClusterGroup();
   courtClusters.addLayer(courtCentroidsLayer);
   courtCentroidsLayer.addTo(courtClusters);
@@ -239,10 +251,6 @@ function init() {
       selection = null;
     }
   });
-
- // L.easyButton('<img src="Home_Button.png">', function(btn, map){
-  //    reloadLayers();
- // }).addTo(map);
   
   // function to set the old selected feature back to its original symbol. Used when the map or a feature is clicked.
   function resetStyles(){
@@ -250,6 +258,7 @@ function init() {
     else if (selectedLayer === courtsLayer) selectedLayer.resetStyle(selection);
   }
   
+  // function to add popups to the courts features of both layers
   function allPopup(layer) {
       var popupContent = 
         "<div class='popup-content'>" +
@@ -265,6 +274,7 @@ function init() {
   courtsLayer.eachLayer(allPopup);
   courtCentroidsLayer.eachLayer(allPopup);
 
+  // function to sum the values of a given attribute for all markers in a layer
   function sumAttribute(markers, attribute) {
     let sum = 0;
     markers.forEach(marker => {
@@ -278,6 +288,7 @@ function init() {
     courtClusters.on('clustermouseover', function (a) {
       // a.layer is a cluster
       var childMarkers = a.layer.getAllChildMarkers();
+      // sum the sports for all courts in the cluster
       var popupContent = 
       "<div class='popup-content'>" +
       "<h3>Total Courts: " + childMarkers.length + "</h3>" +
@@ -307,6 +318,7 @@ function init() {
   map.on('zoomend', resetButtonHighlight);
   map.on('movestart', resetButtonHighlight);
 
+  // Create a set of sports to populate the sports dropdown
   const sportsSet = new Set([
     'Basketball',
     'Bocci',
@@ -319,7 +331,7 @@ function init() {
     'Tai Chi',
     'Tennis',
     'Volleyball'
-  ]);  // To store unique sports
+  ]);
 
   var dropdown = document.getElementById('sports-dropdown');
 
@@ -356,6 +368,7 @@ function init() {
 
   });
   
+  // Add an event listener to the reset button
   document.getElementById('reset-button').addEventListener('click', function() {
       var dropdown = document.getElementById('sports-dropdown');
       for(var i=0; i<dropdown.options.length; i++) {
