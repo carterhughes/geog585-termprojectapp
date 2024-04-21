@@ -139,6 +139,7 @@ function init() {
     
     configureZoomLayers();
     configureExtentLayers();
+    courtClusterPopup();
     updateCourtCount();
     resetButtonHighlightRemove();
   }
@@ -192,6 +193,7 @@ function init() {
 
     configureZoomLayers();
     configureExtentLayers();
+    courtClusterPopup();
     updateCourtCount();
     resetButtonHighlight();
   }
@@ -237,6 +239,10 @@ function init() {
       selection = null;
     }
   });
+
+ // L.easyButton('<img src="Home_Button.png">', function(btn, map){
+  //    reloadLayers();
+ // }).addTo(map);
   
   // function to set the old selected feature back to its original symbol. Used when the map or a feature is clicked.
   function resetStyles(){
@@ -268,25 +274,28 @@ function init() {
   };
 
   // handle mouseover events on clusters
-  courtClusters.on('clustermouseover', function (a) {
-    // a.layer is a cluster
-    var childMarkers = a.layer.getAllChildMarkers();
-    var popupContent = 
-    "<div class='popup-content'>" +
-    "<h3>Total Courts: " + childMarkers.length + "</h3>" +
-    "<p><strong>Basketball Courts: </strong> " + sumAttribute(childMarkers, 'BASKETBALL') + "</p>" +
-    "<p><strong>Bocci Courts: </strong> " + sumAttribute(childMarkers, 'BOCCI') + "</p>" +
-    "<p><strong>Futsal Courts: </strong> " + sumAttribute(childMarkers, 'FUTSAL') + "</p>" +
-    "<p><strong>Handball Courts: </strong> " + sumAttribute(childMarkers, 'HANDBALL') + "</p>" +
-    "<p><strong>Hockey Courts: </strong> " + sumAttribute(childMarkers, 'HOCKEY') + "</p>" +
-    "<p><strong>Pickleball Courts: </strong> " + sumAttribute(childMarkers, 'PICKLEBALL') + "</p>" +
-    "<p><strong>Shuffleboard Courts: </strong> " + sumAttribute(childMarkers, 'SHUFFLEBOA') + "</p>" +
-    "<p><strong>Tai Chi Courts: </strong> " + sumAttribute(childMarkers, 'TAICHI') + "</p>" +
-    "<p><strong>Tennis Courts: </strong> " + sumAttribute(childMarkers, 'TENNIS') + "</p>" +
-    "<p><strong>Volleyball Courts: </strong> " + sumAttribute(childMarkers, 'VOLLEYBALL') + "</p>"
-    + "</div>";
-    a.layer.bindPopup(popupContent).openPopup();
-  });
+  function courtClusterPopup() {
+    courtClusters.on('clustermouseover', function (a) {
+      // a.layer is a cluster
+      var childMarkers = a.layer.getAllChildMarkers();
+      var popupContent = 
+      "<div class='popup-content'>" +
+      "<h3>Total Courts: " + childMarkers.length + "</h3>" +
+      "<p><strong>Basketball Courts: </strong> " + sumAttribute(childMarkers, 'BASKETBALL') + "</p>" +
+      "<p><strong>Bocci Courts: </strong> " + sumAttribute(childMarkers, 'BOCCI') + "</p>" +
+      "<p><strong>Futsal Courts: </strong> " + sumAttribute(childMarkers, 'FUTSAL') + "</p>" +
+      "<p><strong>Handball Courts: </strong> " + sumAttribute(childMarkers, 'HANDBALL') + "</p>" +
+      "<p><strong>Hockey Courts: </strong> " + sumAttribute(childMarkers, 'HOCKEY') + "</p>" +
+      "<p><strong>Pickleball Courts: </strong> " + sumAttribute(childMarkers, 'PICKLEBALL') + "</p>" +
+      "<p><strong>Shuffleboard Courts: </strong> " + sumAttribute(childMarkers, 'SHUFFLEBOA') + "</p>" +
+      "<p><strong>Tai Chi Courts: </strong> " + sumAttribute(childMarkers, 'TAICHI') + "</p>" +
+      "<p><strong>Tennis Courts: </strong> " + sumAttribute(childMarkers, 'TENNIS') + "</p>" +
+      "<p><strong>Volleyball Courts: </strong> " + sumAttribute(childMarkers, 'VOLLEYBALL') + "</p>"
+      + "</div>";
+      a.layer.bindPopup(popupContent).openPopup();
+    });
+  };
+  courtClusterPopup();
 
   // function to handle zoom level changes
   // reference: https://gis.stackexchange.com/questions/182628/leaflet-layers-on-different-zoom-levels-how
