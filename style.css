@@ -20,6 +20,12 @@ body {
     background-color: #f9f9f9;
 }
 
+#title {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
 #central-container {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
@@ -32,7 +38,7 @@ body {
     flex: 1;
     grid-column: 2;
     width: 100%;
-    height: 700px;
+    height: 680px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -43,8 +49,8 @@ body {
     flex: 1;
     grid-column: 1;
     width: 100%;
-    height: 700px;
-    margin: 0 auto;
+    height: 680px;
+    margin: 0;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
@@ -62,8 +68,9 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
-    font-size: 1.2em;
+    font-size: 1.4em;
     line-height: 1.6;
+    margin-top: 0px;
 }
 
 .leaflet-container {
@@ -114,4 +121,18 @@ body {
 
 .unselected {
     background-color: #f9f9f9; 
+}
+
+#readme {
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 1.3em;
+    line-height: 1.6;
+    text-align: justify;
+    text-align-last: left;
+    height: 600px;
+    margin-bottom: 0px;
 }
