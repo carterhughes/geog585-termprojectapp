@@ -11,7 +11,7 @@ function init() {
   });
 
   // create tile layer and add it to map
-  var tiles = L.tileLayer('https://geog585-carterhughes.s3.amazonaws.com/MocoBasemap/{z}/{x}/{y}.png');           
+  var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png');           
   tiles.addTo(map);
 
   var selection;
